@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkyPay Checkout</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      form {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        width: 350px;
+      }
+      button {
+        background: #1d66cc;
+        color: white;
+        border: none;
+        padding: 10px;
+        width: 100%;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      button:hover {
+        background: #0f4db3;
+      }
+      #payment-message {
+        margin-top: 15px;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="payment-form">
+      <h2>SkyPay Checkout</h2>
+      <div id="card-element"></div>
+      <button id="submit">Pay $50</button>
+      <p id="payment-message"></p>
+    </form>
+    <script type="module" src="../src/payment.js"></script>
+  </body>
+</html>

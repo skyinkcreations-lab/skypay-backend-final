@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyPay Checkout</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #0e0e0e;
+      color: #fff;
+    }
+    #payment-form {
+      background: #1b1b1b;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 350px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    }
+    button {
+      background: #0070f3;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      width: 100%;
+      transition: background 0.2s ease;
+    }
+    button:hover {
+      background: #005ad1;
+    }
+  </style>
+</head>
+<body>
+  <h2>SkyPay Checkout</h2>
+  <form id="payment-form">
+    <div id="card-element" style="margin-bottom: 20px;"></div>
+    <button type="submit">Pay $20.00</button>
+  </form>
+
+  <script>
+    // ⚠️ IMPORTANT: use your Stripe *publishable test key* here, NOT the secret key
+    const stripe = Stripe("pk_test_51QEAduA4GOx0tIPNvP3PI3gIslGVDgUWvKVM74Lga9gKsGzjD9IBtNgtF5T3ycvVxCmq6oqncBqa7OnVZYr0XQ4v0005NAyh5s");
+
+    const elements = stripe.elements();
+    const cardElement = elements.create("card", {
+      style: {
+        base: {
+          color: "#fff",
+          fontFamily: "system-ui, sans-serif",
+          fontSize: "16px",
+          "::placeholder": { color: "#888" }
+        },
+        invalid: { color: "#ff4d4f" }
+      }
+    });
+    cardElement.mount("#card-element");
+
+    const form = document.getElementById("payment-form");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const response = await fetch("http://localhost:5000/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 2000, currency: "usd" }),
+      });
+
+      const data = await response.json();
+      const clientSecret = data.clientSecret;
+
+      const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: { card: cardElement },
+      });
+
+      if (error) {
+        alert("❌ " + error.message);
+      } else if (paymentIntent.status === "succeeded") {
+        alert("✅ Payment successful!");
+      }
+    });
+  </script>
+</body>
+</html>
